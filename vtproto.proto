@@ -1,0 +1,84 @@
+/*
+ * This file, in its original form, was created by Lucas Hinderberger
+ *
+ * To the extend possible under law, Lucas Hinderberger has waived all copyright
+ * and related or neighboring rights to this file, as described in
+ * CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/).
+ * This work is published from Germany.
+ */
+
+syntax = "proto3";
+
+enum InstructionType {
+    UNSUPPORTED = 0;
+    ADD_CHANNELS_TO_GROUP = 1; // Followed by ParamsAddToGroup message
+    ADD_GROUPS_TO_GROUP = 2; // Followed by ParamsAddToGroup message
+    WAIT = 3; // Followed by ParamsWait message
+    SET_CHANNEL_WAVEFORM_TYPE = 4; // Followed by ParamsSetWaveformType message
+    SET_GROUP_WAVEFORM_TYPE = 5; // Followed by ParamsSetWaveformType message
+    SET_CHANNEL_INTENSITY = 6; // Followed by ParamsInstantlySetIntensity message
+    SET_CHANNEL_FREQUENCY = 7; // Followed by ParamsInstantlySetFrequency message
+    SET_GROUP_INTENSITY = 8; // Followed by ParamsInstantlySetIntensity message
+    SET_GROUP_FREQUENCY = 9; // Followed by ParamsInstantlySetFrequency message
+    INTERPOLATE_CHANNEL_INTENSITY = 10; // Followed by ParamsInterpolateIntensity message
+    INTERPOLATE_CHANNEL_FREQUENCY = 11; // Followed by ParamsInterpolateFrequency message
+    INTERPOLATE_GROUP_INTENSITY = 12; // Followed by ParamsInterpolateIntensity message
+    INTERPOLATE_GROUP_FREQUENCY = 13; // Followed by ParamsInterpolateFrequency message
+}
+
+enum WaveformType {
+    SINE = 0;
+    SQUARE = 1;
+    TRIANGLE = 2;
+    SAWTOOTH = 3;
+}
+
+message FileHeader {
+    uint32 format_version = 1; // Fixed value for this draft of vtproto: 0
+    string pattern_name = 2;
+    string author = 3;
+    uint32 duration_ms = 4;
+    uint32 n_instructions = 5;
+    uint32 n_channels = 6;
+    map<string,string> custom_headers = 7;
+}
+
+message InstructionHeader {
+    InstructionType instruction_type = 1;
+}
+
+message ParamsAddToGroup {
+    uint32 group_id = 1;
+    repeated uint32 ids_to_be_added = 2;
+}
+
+message ParamsWait {
+    uint32 milliseconds = 1;
+}
+
+message ParamsSetWaveformType {
+    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
+    WaveformType waveform_type = 1;
+}
+
+message ParamsInstantlySetFrequency {
+    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
+    uint32 frequency_hz = 2;
+}
+
+message ParamsInstantlySetIntensity {
+    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
+    float intensity = 2; // Range 0 - 1.0
+}
+
+message ParamsInterpolateFrequency {
+    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
+    uint32 duration_ms = 2;
+    uint32 frequency_hz = 3;
+}
+
+message ParamsInterpolateIntensity {
+    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
+    uint32 duration_ms = 2;
+    float intensity = 3; // Range 0-1
+}
