@@ -35,7 +35,8 @@ addressed.
 at once. For the avoidance of doubt, Channel IDs and Channel Group IDs cannot
 overlap with one another. In other words, if there is a channel with ID 123
 and a channel group with ID 123 at the same time, it is possible to address both
-of them independently.
+of them independently. **Group ID 0** is reserved for the special group
+"all channels".
 
 This format can control the parameters **Waveform**, **Intensity**
 and **Frequency** of each actuator. You can either set these values with
