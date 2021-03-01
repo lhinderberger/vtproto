@@ -69,8 +69,8 @@ The specification of the messages for representing and transferring vibrotactile
 patterns can be found in the file [vtproto.proto](./vtproto.proto)
 
 A transmission or file conforming to this specification always begins with
-a `FileHeader` message, followed by an arbitrary number of pairs of
-`InstructionHeader` and `Params*` messages.
+a `FileHeader` message, followed by an arbitrary number of `Instruction`
+messages.
 
 ## Specification of File Storage Format
 Since Protocol Buffers is neither self-describing nor self-delimiting, in order
@@ -80,19 +80,15 @@ before each message (see also [the Protocol Buffers documentation about streamin
 
 Thus, a file conforming to this specification looks like this:
 
-| # | Type              | Description                                          |
-|---|-------------------|------------------------------------------------------|
-| 0 | varint            | Length of the following FileHeader message           |
-| 1 | FileHeader        |                                                      |
-| 2 | varint            | Length of the following InstructionHeader message    |
-| 3 | InstructionHeader | Header for the first instruction                     |
-| 4 | varint            | Length of the following Params* message              |
-| 5 | Params*           | Parameters for the first instruction                 |
-| 6 | varint            | Length of the following InstructionHeader message    |
-| 7 | InstructionHeader | Header for the second instruction                    |
-| 8 | varint            | Length of the following Params* message              |
-| 9 | Params*           | Parameters for the second instruction                |
-| - | ...               | More instructions...                                 |
+| # | Type        | Description                                 |
+|---|-------------|---------------------------------------------|
+| 0 | varint      | Length of the following FileHeader message  |
+| 1 | FileHeader  |                                             |
+| 2 | varint      | Length of the following Instruction message |
+| 3 | Instruction | First instruction                           |
+| 4 | varint      | Length of the following Instruction message |
+| 5 | Instruction | Second instruction                          |
+| - | ...         | More instructions...                        |
 
 ## Possible extensions
 It is possible to extend vtproto with new features.
