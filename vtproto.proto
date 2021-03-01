@@ -76,7 +76,7 @@ message ParamsInterpolateIntensity {
 
 message ParamsSetWaveformType {
     uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
-    WaveformType waveform_type = 1;
+    WaveformType waveform_type = 2;
 }
 
 message ParamsWait {
