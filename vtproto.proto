@@ -32,8 +32,8 @@ message Instruction {
         InstAddToGroup add_groups_to_group = 2;
         InstWait wait = 3;
         InstSetWaveformType set_waveform_type = 4;
-        InstInstantlySetParameter set_parameter = 6;
-        InstInterpolateParameter interpolate_parameter = 7;
+        InstInstantlySetParameter set_parameter = 5;
+        InstInterpolateParameter interpolate_parameter = 6;
     }
 }
 
