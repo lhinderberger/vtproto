@@ -9,23 +9,6 @@
 
 syntax = "proto3";
 
-enum InstructionType {
-    UNSUPPORTED = 0;
-    ADD_CHANNELS_TO_GROUP = 1; // Followed by ParamsAddToGroup message
-    ADD_GROUPS_TO_GROUP = 2; // Followed by ParamsAddToGroup message
-    WAIT = 3; // Followed by ParamsWait message
-    SET_CHANNEL_WAVEFORM_TYPE = 4; // Followed by ParamsSetWaveformType message
-    SET_GROUP_WAVEFORM_TYPE = 5; // Followed by ParamsSetWaveformType message
-    SET_CHANNEL_INTENSITY = 6; // Followed by ParamsInstantlySetIntensity message
-    SET_CHANNEL_FREQUENCY = 7; // Followed by ParamsInstantlySetFrequency message
-    SET_GROUP_INTENSITY = 8; // Followed by ParamsInstantlySetIntensity message
-    SET_GROUP_FREQUENCY = 9; // Followed by ParamsInstantlySetFrequency message
-    INTERPOLATE_CHANNEL_INTENSITY = 10; // Followed by ParamsInterpolateIntensity message
-    INTERPOLATE_CHANNEL_FREQUENCY = 11; // Followed by ParamsInterpolateFrequency message
-    INTERPOLATE_GROUP_INTENSITY = 12; // Followed by ParamsInterpolateIntensity message
-    INTERPOLATE_GROUP_FREQUENCY = 13; // Followed by ParamsInterpolateFrequency message
-}
-
 enum WaveformType {
     SINE = 0;
     SQUARE = 1;
@@ -43,42 +26,55 @@ message FileHeader {
     map<string,string> custom_headers = 7;
 }
 
-message InstructionHeader {
-    InstructionType instruction_type = 1;
+message Instruction {
+    oneof concrete_instruction {
+        InstAddToGroup add_channels_to_group = 1;
+        InstAddToGroup add_groups_to_group = 2;
+        InstWait wait = 3;
+        InstSetWaveformType set_waveform_type = 4;
+        InstInstantlySetParameter set_parameter = 5;
+        InstInterpolateParameter interpolate_parameter = 6;
+    }
 }
 
-message ParamsAddToGroup {
+message InstAddToGroup {
     uint32 group_id = 1;
     repeated uint32 ids_to_be_added = 2;
 }
 
-message ParamsInstantlySetFrequency {
-    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
-    uint32 frequency_hz = 2;
+message InstInstantlySetParameter {
+    oneof target_id {
+        uint32 channel_id = 1;
+        uint32 group_id = 2;
+    }
+    oneof parameter {
+        float intensity = 3;
+        uint32 frequency_hz = 4;
+    }
 }
 
-message ParamsInstantlySetIntensity {
-    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
-    float intensity = 2; // Range 0 - 1.0
+message InstInterpolateParameter {
+    oneof target_id {
+        uint32 channel_id = 1;
+        uint32 group_id = 2;
+    }
+
+    uint32 duration_ms = 3;
+
+    oneof parameter {
+        float intensity = 4; // Range 0-1
+        uint32 frequency_hz = 5;
+    }
 }
 
-message ParamsInterpolateFrequency {
-    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
-    uint32 duration_ms = 2;
-    uint32 frequency_hz = 3;
+message InstSetWaveformType {
+    oneof target_id {
+        uint32 channel_id = 1;
+        uint32 group_id = 2;
+    }
+    WaveformType waveform_type = 3;
 }
 
-message ParamsInterpolateIntensity {
-    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
-    uint32 duration_ms = 2;
-    float intensity = 3; // Range 0-1
-}
-
-message ParamsSetWaveformType {
-    uint32 target_id = 1; // Either a Group ID or Channel ID, depending on the instruction type
-    WaveformType waveform_type = 2;
-}
-
-message ParamsWait {
+message InstWait {
     uint32 milliseconds = 1;
 }
